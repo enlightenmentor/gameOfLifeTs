@@ -1,3 +1,4 @@
+import { setTimeout } from 'node:timers/promises';
 import { stdout } from 'node:process';
 
 const range = (length: number) => Array.from(new Array<undefined>(length));
@@ -7,14 +8,17 @@ const clearConsole = () => {
     stdout.clearScreenDown();
 };
 
-const cellsToString = (cells: number[][]) =>
-    cells
-        .map((cellsRow) =>
-            cellsRow.map((cell) => (cell ? '00' : '  ')).join('')
-        )
-        .join('\n');
+const createRunner = (frameRate: number, callback: Function) => {
+    const run = async () => {
+        const timeout = setTimeout(frameRate);
+        await Promise.all([callback(), timeout]);
+        run();
+    };
 
-const createBenchmarker = () => {
+    return { start: run };
+};
+
+const createBenchmark = () => {
     let sum = 0;
     let count = 0;
     let max = -Infinity;
@@ -41,4 +45,4 @@ const createBenchmarker = () => {
     };
 };
 
-export { range, createBenchmarker, clearConsole, cellsToString };
+export { range, createBenchmark, createRunner, clearConsole };
