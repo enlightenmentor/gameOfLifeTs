@@ -3,12 +3,14 @@ import { stdout } from 'node:process';
 
 const range = (length: number) => Array.from(new Array<undefined>(length));
 
-const clearConsole = () => {
-    stdout.cursorTo(0, 0);
-    stdout.clearScreenDown();
-};
+const clearConsole = () =>
+    new Promise((resolve) => {
+        stdout.cursorTo(0, 0, () =>
+            stdout.clearScreenDown(resolve as () => void)
+        );
+    });
 
-const createRunner = (frameRate: number, callback: Function) => {
+const createRunner = (callback: Function, frameRate: number) => {
     const run = async () => {
         const timeout = setTimeout(frameRate);
         await Promise.all([callback(), timeout]);

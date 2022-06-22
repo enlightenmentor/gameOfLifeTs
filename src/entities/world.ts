@@ -18,8 +18,9 @@ const create = ({ width, height, aliveRatio = 0 }: WorldParams): World => {
             return state.cells;
         },
         update() {
-            const nextCells = spawnCells(width, height);
+            const nextCells: number[][] = [];
             for (let y = 0; y < height; y++) {
+                nextCells[y] = [];
                 for (let x = 0; x < width; x++) {
                     nextCells[y][x] = getNextStatus({ x, y }, state.cells);
                 }
@@ -28,11 +29,14 @@ const create = ({ width, height, aliveRatio = 0 }: WorldParams): World => {
             state.age++;
         },
         toString() {
-            return state.cells
-                .map((cellsRow) =>
-                    cellsRow.map((cell) => (cell ? '[]' : '  ')).join('')
-                )
-                .join('\n');
+            let string = '';
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    string += state.cells[y][x] ? '[]' : '  ';
+                }
+                string += '\n';
+            }
+            return string;
         },
     };
 };
